@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Attendance - Mini ERP{% endblock %}
+
+{% block content %}
+<section class="attendance">
+    <h2>Attendance Records</h2>
+
+    <!-- Filter Form -->
+    <div class="card">
+        
+<!-- Fixed attendance filter - columns mein lap nahi hoga -->
+    <form method="get" action="{{ url_for('admin_attendance') }}" class="attendance-filter">
+        <div class="filter-grid">
+            <div class="filter-item">
+                <label for="date">Date</label>
+                <input type="date" name="date" id="date" value="{{ attendance_date }}" class="filter-input">
+            </div>
+            
+            <div class="filter-item">
+                <label for="emp_id">Employee ID</label>
+                <input type="text" name="emp_id" id="emp_id" 
+                    placeholder="Employee ID (optional)" 
+                    value="{{ emp_id or '' }}" class="filter-input">
+            </div>
+            
+            <div class="filter-item">
+                <button type="submit" class="btn btn-primary filter-btn">Filter</button>
+                <a href="{{ url_for('admin_attendance') }}" class="btn btn-outline filter-btn">Reset</a>
+            </div>
+        </div>
+    </form>
+    </div>
+
+    <!-- Summary -->
+    <div class="card summary">
+        {% if mode == "employee" %}
+            <h3>Attendance Summary - Employee ID: {{ emp_id }}</h3>
+            <p class="period">{{ month_start }} — {{ month_end }}</p>
+            <div class="summary-stats">
+                <span class="stat present">Present: <strong>{{ present_days }}</strong></span>
+                <span class="stat leave">Leave: <strong>{{ leave_days }}</strong></span>
+                <span class="stat absent">Absent: <strong>{{ absent_days }}</strong></span>
+            </div>
+        {% else %}
+            <h3>Attendance for {{ attendance_date }}</h3>
+            <div class="summary-stats">
+                <span class="stat present">Present: <strong>{{ present_count }}</strong></span>
+                <span class="stat leave">Leave: <strong>{{ leave_count }}</strong></span>
+                <span class="stat absent">Absent: <strong>{{ absent_count }}</strong></span>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Attendance Table -->
+    <div class="card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Employee ID</th>
+                    <th>Name</th>
+                    <th>Check-in</th>
+                    <th>Check-out</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if attendance %}
+                    {% for attend in attendance %}
+                    <tr>
+                        <td>{{ attend.date }}</td>
+                        <td>{{ attend.emp_id }}</td>
+                        <td>{{ attend.full_name }}</td>
+                        <td>{{ attend.check_in }}</td>
+                        <td>{{ attend.check_out }}</td>
+                        <td>
+                            <span class="status-badge status-{{ attend.status|lower }}">
+                                {{ attend.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="no-data">
+                            No attendance records found
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

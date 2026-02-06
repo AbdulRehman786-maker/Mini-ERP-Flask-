@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Mark Attendance - Mini ERP{% endblock %}
+
+{% block content %}
+<section class="attendance-mark">
+    <h2>Mark Attendance</h2>
+    
+    <div class="card">
+        <form method="POST" class="attendance-form">
+            <div class="form-row">
+                <label for="emp_id">Employee ID *</label>
+                <input id="emp_id" type="number" name="emp_id" 
+                       placeholder="Enter Employee ID" required min="1">
+            </div>
+
+            <!-- Instructions -->
+            <div class="attendance-info">
+                <p><strong>Instructions:</strong></p>
+                <ul>
+                    <li><span class="checkin-dot"></span> <strong>Check In:</strong> Mark when employee arrives</li>
+                    <li><span class="checkout-dot"></span> <strong>Check Out:</strong> Mark when employee leaves</li>
+                    <li><span class="absent-dot"></span> <strong>Absent:</strong> Mark if employee is absent</li>
+                </ul>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="attendance-actions">
+                <button type="submit" name="action" value="checkin" class="btn-checkin">
+                    <span class="btn-icon">✅</span>
+                    <span class="btn-text">Check In</span>
+                </button>
+
+                <button type="submit" name="action" value="checkout" class="btn-checkout">
+                    <span class="btn-icon">⏱</span>
+                    <span class="btn-text">Check Out</span>
+                </button>
+
+                <button type="submit" name="action" value="absent" class="btn-absent">
+                    <span class="btn-icon">❌</span>
+                    <span class="btn-text">Mark Absent</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

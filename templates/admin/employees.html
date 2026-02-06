@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Employees - Mini ERP{% endblock %}
+
+{% block content %}
+<section class="employees">
+    <div class="toolbar card">
+        <h2>Employees ({{ total_records }})</h2>
+        
+        <form method="get" action="{{ url_for('admin_employees') }}" class="search-form">
+            <input name="q" placeholder="Search by name or ID" value="{{ q }}" class="search-input">
+            
+            <select name="department" class="filter-select">
+                <option value="">All Departments</option>
+                {% for d in ['hr','sales','it','finance','operations'] %}
+                    <option value="{{ d }}" {% if department == d %}selected{% endif %}>
+                        {{ d|capitalize }}
+                    </option>
+                {% endfor %}
+            </select>
+            
+            <select name="sort" class="filter-select">
+                <option value="asc" {% if sort == 'asc' %}selected{% endif %}>Ascending</option>
+                <option value="descending" {% if sort == 'descending' %}selected{% endif %}>Descending</option>
+            </select>
+            
+            <button type="submit" class="btn btn-primary search-btn">Search</button>
+            <a class="btn btn-success" href="{{ url_for('admin_employee_new') }}">+ Add Employee</a>
+        </form>
+    </div>
+
+    <!-- Employees Table -->
+    <div class="card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>EMP ID</th>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Role</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                {% if employees %}
+                    {% for emp in employees %}
+                    <tr>
+                        <td>{{ emp.emp_id }}</td>
+                        <td>{{ emp.first_name }} {{ emp.last_name }}</td>
+                        <td><span class="dept-badge">{{ emp.department|upper }}</span></td>
+                        <td><span class="role-badge role-{{ emp.role }}">{{ emp.role|capitalize }}</span></td>
+                        <td>{{ emp.phone }}</td>
+                        <td class="action-buttons">
+                            <a class="btn-small btn-outline" href="{{ url_for('admin_employee_edit', employee_id=emp.emp_id) }}">Edit</a>
+                            <form method="post" action="{{ url_for('admin_employee_delete', employee_id=emp.emp_id) }}" 
+                                class="inline-form delete-form">
+                                <button class="btn-delete" type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="no-data">No employees found</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if total_pages > 1 %}
+    <div class="pagination">
+        {% if current_page > 1 %}
+            <a class="page-nav" href="?page={{ current_page - 1 }}&q={{ q }}&department={{ department }}&sort={{ sort }}">« Prev</a>
+        {% endif %}
+        
+        {% if page_range[0] > 1 %}
+            <a class="page-number" href="?page=1&q={{ q }}&department={{ department }}&sort={{ sort }}">1</a>
+            {% if page_range[0] > 2 %}
+                <span class="page-dots">...</span>
+            {% endif %}
+        {% endif %}
+        
+        {% for p in page_range %}
+            <a class="page-number {% if p == current_page %}active{% endif %}" 
+               href="?page={{ p }}&q={{ q }}&department={{ department }}&sort={{ sort }}">
+                {{ p }}
+            </a>
+        {% endfor %}
+        
+        {% if page_range[-1] < total_pages %}
+            {% if page_range[-1] < total_pages - 1 %}
+                <span class="page-dots">...</span>
+            {% endif %}
+            <a class="page-number" href="?page={{ total_pages }}&q={{ q }}&department={{ department }}&sort={{ sort }}">
+                {{ total_pages }}
+            </a>
+        {% endif %}
+        
+        {% if current_page < total_pages %}
+            <a class="page-nav" href="?page={{ current_page + 1 }}&q={{ q }}&department={{ department }}&sort={{ sort }}">Next »</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

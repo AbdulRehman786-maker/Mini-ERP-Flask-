@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}{% if employee %}Edit Employee{% else %}Add New Employee{% endif %} - Mini ERP{% endblock %}
+
+{% block content %}
+<section class="form-card">
+    <h2>{% if employee %}Edit Employee{% else %}Add New Employee{% endif %}</h2>
+    
+    <form method="post" action="">
+        <!-- Row 1: Name Fields - Side by Side -->
+        <div class="form-two-columns">
+            <div class="form-col">
+                <label for="first_name">First Name *</label>
+                <input id="first_name" name="first_name" 
+                       value="{{ employee.first_name if employee else '' }}" 
+                       type="text" placeholder="First name" required>
+            </div>
+
+            <div class="form-col">
+                <label for="last_name">Last Name *</label>
+                <input id="last_name" name="last_name" 
+                       value="{{ employee.last_name if employee else '' }}" 
+                       type="text" placeholder="Last name" required>
+            </div>
+        </div>
+
+        <!-- Row 2: Contact Fields - Side by Side -->
+        <div class="form-two-columns">
+            <div class="form-col">
+                <label for="email">Email *</label>
+                <input id="email" name="email" 
+                       value="{{ employee.email if employee else '' }}" 
+                       type="email" placeholder="email@example.com" required>
+            </div>
+
+            <div class="form-col">
+                <label for="phone">Phone *</label>
+                <input id="phone" name="phone" 
+                       value="{{ employee.phone if employee else '' }}" 
+                       type="tel" placeholder="+92-300-0000000" required>
+            </div>
+        </div>
+
+        <!-- Single row fields (full width) -->
+        <div class="form-full-row">
+            <label for="department">Department *</label>
+            <select id="department" name="department" required>
+                <option value="">-- Select Department --</option>
+                {% set depts = ['HR', 'IT', 'Sales', 'Finance', 'Operations', 'Marketing'] %}
+                {% for dept in depts %}
+                <option value="{{ dept|lower }}" 
+                    {% if employee and employee.department|lower == dept|lower %}selected{% endif %}>
+                    {{ dept }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-full-row">
+            <label for="role">Role *</label>
+            <select id="role" name="role" required>
+                <option value="">-- Select Role --</option>
+                <option value="admin" {% if employee and employee.role == 'admin' %}selected{% endif %}>
+                    Admin
+                </option>
+                <option value="staff" {% if employee and employee.role == 'staff' %}selected{% endif %}>
+                    Staff
+                </option>
+            </select>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                {% if employee %}Update Employee{% else %}Add Employee{% endif %}
+            </button>
+            <a class="btn-outline" href="{{ url_for('admin_employees') }}">Cancel</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

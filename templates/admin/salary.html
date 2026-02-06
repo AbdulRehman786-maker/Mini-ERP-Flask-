@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Salary Management - Mini ERP{% endblock %}
+
+{% block content %}
+<section class="salary">
+    <h2>Salary Management</h2>
+
+    <!-- Filter Form -->
+    <div class="card">
+        <form method="get" action="{{ url_for('admin_salary') }}" class="salary-filter">
+            <div class="filter-row">
+                <div class="form-row">
+                    <label for="month">Month</label>
+                    <input type="month" id="month" name="month" 
+                           value="{{ request.args.get('month','') }}">
+                </div>
+                
+                <div class="form-row">
+                    <label for="emp_id">Employee ID (Optional)</label>
+                    <input type="text" id="emp_id" name="emp_id" 
+                           placeholder="Enter Employee ID" 
+                           value="{{ emp_id or '' }}">
+                </div>
+                
+                <div class="form-row">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                    <a href="{{ url_for('admin_salary') }}" class="btn btn-outline">Reset</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Summary -->
+    <div class="salary-summary card">
+        <h3>Summary for {{ month_display }}</h3>
+        
+        <div class="summary-grid">
+            <div class="summary-item">
+                <span class="summary-label">Total Employees</span>
+                <span class="summary-value">{{ counts.rows }}</span>
+            </div>
+            
+            <div class="summary-item paid">
+                <span class="summary-label">Paid</span>
+                <span class="summary-value">{{ counts.paid }}</span>
+            </div>
+            
+            <div class="summary-item unpaid">
+                <span class="summary-label">Unpaid</span>
+                <span class="summary-value">{{ counts.unpaid }}</span>
+            </div>
+            
+            <div class="summary-item total">
+                <span class="summary-label">Net Total</span>
+                <span class="summary-value">{{ "%.2f"|format(totals.net) }}</span>
+            </div>
+        </div>
+        
+        <div class="financial-summary">
+            <p><strong>Financial Breakdown:</strong></p>
+            <p>Base: <strong>{{ "%.2f"|format(totals.base) }}</strong> | 
+               Bonus: <strong>{{ "%.2f"|format(totals.bonus) }}</strong> | 
+               Deductions: <strong>{{ "%.2f"|format(totals.deductions) }}</strong></p>
+        </div>
+    </div>
+
+    <!-- Salary Table -->
+    <div class="card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>EMP ID</th>
+                    <th>Employee</th>
+                    <th>Base Salary</th>
+                    <th>Bonus</th>
+                    <th>Deductions</th>
+                    <th>Net Pay</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if salaries %}
+                    {% for s in salaries %}
+                    <tr>
+                        <td>{{ s.emp_id }}</td>
+                        <td>{{ s.full_name }}</td>
+                        <td class="numeric">{{ "%.2f"|format(s.base_salary) }}</td>
+                        <td class="numeric bonus">{{ "%.2f"|format(s.bonus) }}</td>
+                        <td class="numeric deduction">{{ "%.2f"|format(s.deductions) }}</td>
+                        <td class="numeric net-pay">{{ "%.2f"|format(s.net) }}</td>
+                        <td>
+                            <span class="status-badge status-{{ s.paid_status }}">
+                                {{ s.paid_status|upper }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="no-data">No salary data found</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Mini ERP{% endblock %}</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='erp-logo/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='erp-logo/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='erp-logo/favicon-16x16.png') }}">
+    <link rel="icon" href="{{ url_for('static', filename='erp-logo/favicon.ico') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='erp-logo/site.webmanifest') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Header -->
+    <header class="topbar">
+        <div class="container">
+            <a class="brand" href="{{ url_for('admin_dashboard') }}">
+                <img src="{{ url_for('static', filename='MiniERPLogo.png') }}" alt="Mini ERP" class="brand-logo">
+            </a>
+            <nav class="navbar">
+                {% if session.get("user_id") %}
+                    <div class="nav-buttons">
+                        {% if session.get("role") == "admin" %}
+                            <a href="{{ url_for('admin_dashboard') }}" class="nav-btn {% if request.path == url_for('admin_dashboard') %}active{% endif %}">Dashboard</a>
+                            <a href="{{ url_for('admin_employees') }}" class="nav-btn {% if request.path == url_for('admin_employees') %}active{% endif %}">Employees</a>
+                            <a href="{{ url_for('attendance') }}" class="nav-btn {% if request.path == url_for('attendance') %}active{% endif %}">Mark Attendance</a>
+                            <a href="{{ url_for('admin_attendance') }}" class="nav-btn {% if request.path == url_for('admin_attendance') %}active{% endif %}">Attendance List</a>
+                            <a href="{{ url_for('admin_salary') }}" class="nav-btn {% if request.path == url_for('admin_salary') %}active{% endif %}">Salary</a>
+                        {% elif session.get("role") == "staff" %}
+                            <a href="{{ url_for('staff_dashboard') }}" class="nav-btn {% if request.path == url_for('staff_dashboard') %}active{% endif %}">Staff Dashboard</a>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="user-menu">
+                        <span class="username">{{ session.get("username") }}</span>
+                        <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+                    </div>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Flash Messages -->
+        <div class="flash-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <ul class="flash-messages">
+                        {% for category, message in messages %}
+                            <li class="flash-message flash-{{ category }}">
+                                {{ message }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Auto-hide flash messages -->
+        <script>
+            setTimeout(() => {
+                const flashMessages = document.querySelectorAll('.flash-message');
+                flashMessages.forEach(msg => msg.style.display = 'none');
+            }, 4000);
+        </script>
+
+        <!-- Page Content -->
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            © Mini ERP — Employee Management System
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
